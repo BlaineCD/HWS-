@@ -9,7 +9,7 @@ import Combine
 import Foundation
 
 class ViewModel: ObservableObject {
-    @Published var items: [ToDoItem]
+    @Published var items: [Score]
 
     private let savePath = FileManager.documentsDirectory.appendingPathComponent("SavedItems")
 
@@ -20,7 +20,7 @@ class ViewModel: ObservableObject {
     init() {
         do {
             let data = try Data(contentsOf: savePath)
-            items = try JSONDecoder().decode([ToDoItem].self, from: data)
+            items = try JSONDecoder().decode([Score].self, from: data)
         } catch {
             items = []
         }
@@ -46,7 +46,9 @@ class ViewModel: ObservableObject {
     }
 
     func add() {
-        let newItem = ToDoItem()
+        let usedColors = items.map(\.color)
+        let color = ColorChoice.allCases.first { usedColors.contains($0) == false } ?? .blue
+        let newItem = Score(color: color)
         items.append(newItem)
     }
 
@@ -54,7 +56,13 @@ class ViewModel: ObservableObject {
         items.remove(atOffsets: offsets)
     }
 
-    func delete(_ selected: Set<ToDoItem>) {
-        items.removeAll(where: selected.contains)
+    func deleteAll() {
+        items.removeAll()
+    }
+
+    func reset() {
+        for i in 0..<items.count {
+            items[i].score = 0
+        }
     }
 }
