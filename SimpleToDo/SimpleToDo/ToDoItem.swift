@@ -8,7 +8,6 @@
 import Foundation
 
 struct ToDoItem: Codable, Identifiable, Hashable {
-
     enum Priority: String, Codable, CaseIterable {
         case low = "Low"
         case medium = "Medium"
@@ -34,5 +33,6 @@ struct ToDoItem: Codable, Identifiable, Hashable {
             }
         }
     }
+
     static let example = ToDoItem()
 }

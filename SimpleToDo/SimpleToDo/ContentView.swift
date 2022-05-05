@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var editMode = EditMode.inactive
 
     var body: some View {
-        List(selection: $selectedItems) {
+        List (selection: $selectedItems) {
             ForEach($model.items, content: ItemRow.init)
                 .onDelete(perform: model.delete)
         }

@@ -13,7 +13,9 @@ class ViewModel: ObservableObject {
 
     private let savePath = FileManager.documentsDirectory.appendingPathComponent("SavedItems")
 
-    private var saveSubscriptioin: AnyCancellable?
+    private var saveSubscription: AnyCancellable?
+
+    // MARK: Lifecycle
 
     init() {
         do {
@@ -23,12 +25,14 @@ class ViewModel: ObservableObject {
             items = []
         }
 
-        saveSubscriptioin = $items
+        saveSubscription = $items
             .debounce(for: 5, scheduler: RunLoop.main)
-            .sink{ [weak self] _ in
+            .sink { [weak self] _ in
                 self?.save()
             }
     }
+
+    // MARK: Internal
 
     func save() {
         print("Saving")
