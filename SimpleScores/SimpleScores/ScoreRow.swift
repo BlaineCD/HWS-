@@ -18,7 +18,7 @@ struct ScoreRow: View {
                 Image(systemName: "minus")
                     .font(.title3.weight(.black))
                     .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle() )
+                    .contentShape(Rectangle())
             }
 
             TextField("Player Name", text: $item.playerName)
@@ -36,7 +36,7 @@ struct ScoreRow: View {
                 Image(systemName: "plus")
                     .font(.title3.weight(.black))
                     .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle() )
+                    .contentShape(Rectangle())
             }
         }
         .padding(10)
