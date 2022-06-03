@@ -9,22 +9,24 @@ import Combine
 import Foundation
 
 class ViewModel: ObservableObject {
-    @Published var items: [Score]
+    @Published var items: [ToDoItem]
 
     private let savePath = FileManager.documentsDirectory.appendingPathComponent("SavedItems")
 
+    /// An active Combine chain that watches for changes to the `items` array, and calls save()
+    /// 5 seconds after a change has happened.
     private var saveSubscription: AnyCancellable?
-
-    // MARK: Lifecycle
 
     init() {
         do {
             let data = try Data(contentsOf: savePath)
-            items = try JSONDecoder().decode([Score].self, from: data)
+            items = try JSONDecoder().decode([ToDoItem].self, from: data)
         } catch {
             items = []
         }
 
+        // Wait 5 seconds after `items` has changed before calling `save()`, to
+        // avoid repeatedly calling it for every tiny change.
         saveSubscription = $items
             .debounce(for: 5, scheduler: RunLoop.main)
             .sink { [weak self] _ in
@@ -32,11 +34,7 @@ class ViewModel: ObservableObject {
             }
     }
 
-    // MARK: Internal
-
     func save() {
-        print("Saving")
-
         do {
             let data = try JSONEncoder().encode(items)
             try data.write(to: savePath, options: [.atomic, .completeFileProtection])
@@ -46,9 +44,7 @@ class ViewModel: ObservableObject {
     }
 
     func add() {
-        let usedColors = items.map(\.color)
-        let color = ColorChoice.allCases.first { usedColors.contains($0) == false } ?? .blue
-        let newItem = Score(color: color)
+        let newItem = ToDoItem()
         items.append(newItem)
     }
 
@@ -56,13 +52,7 @@ class ViewModel: ObservableObject {
         items.remove(atOffsets: offsets)
     }
 
-    func deleteAll() {
-        items.removeAll()
-    }
-
-    func reset() {
-        for i in 0..<items.count {
-            items[i].score = 0
-        }
+    func delete(_ selected: Set<ToDoItem>) {
+        items.removeAll(where: selected.contains)
     }
 }
